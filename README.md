@@ -1,4 +1,4 @@
-# emak-messages
+# EMAK SMS Messages
 Based off of messages from FusionPBX by Mark Crane
 ![Mobile-screenshot](https://i.imgur.com/p7bRdAt.jpg)
 
