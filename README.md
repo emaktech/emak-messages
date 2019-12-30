@@ -5,4 +5,10 @@ The interface has been fully redesigned with div layout using flexboxes and sepa
 
 Warning: Currently under active development, I do not recommend using this in production, it is changing daily and has not been tested properly!
 
+**Mobile View**
+
 ![Mobile-screenshot](https://i.imgur.com/p7bRdAt.jpg)
+
+**Desktop View**
+
+![Desktop-screenshot](https://i.imgur.com/gcqLB4K.png)
