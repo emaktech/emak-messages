@@ -1,4 +1,4 @@
-# EMAK SMS Messages
+# EMAK SMS Messages for FusionPBX
 Based off of messages from FusionPBX by Mark Crane
 
 The interface has been fully redesigned with div layout using flexboxes and separate stylesheets, additional javascript for client-side styling, etc.
