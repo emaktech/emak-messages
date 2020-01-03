@@ -75,20 +75,12 @@
 
 //additional includes
 	require_once "resources/header.php";
-	require_once "resources/css/messages.css";
-
+	require_once "resources/css/messages.css";?>
+	<link href="resources/css/emoji.css" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+<?php
 //launch in fullscreen when added to homescreen
 echo "<meta name='mobile-web-app-capable' content='yes'>\n";
-
-//resize thread window on window resize
-	echo "<script language='JavaScript' type='text/javascript'>\n";
-	echo "	$(document).ready(function() {\n";
-	echo "		$(window).on('resizeEnd', function() {\n";
-	echo "			$('div#thread_messages').animate({ 'height': $(window).height() - 190 }, 200);\n";
-	echo "		});\n";
-	echo " 	});\n";
-	echo "</script>\n";
-
 
 //cache self (primary contact attachment) image
 	if (is_array($_SESSION['tmp']['messages']['contact_me']) && sizeof($_SESSION['tmp']['messages']['contact_me']) != 0) {
@@ -180,77 +172,79 @@ echo "<meta name='mobile-web-app-capable' content='yes'>\n";
 	echo "				<a href='messages_log.php'><input type='button' class='btn btn_log' alt=\"".$text['label-log']."\" value=\"".$text['label-log']."\"></a>\n";
 
 	echo "		</div>\n";
-	echo "		<div id='thread'>&middot;&middot;&middot;</div>\n";
+	echo "		<div class='thread_container'>\n";
+	echo "			<div id='thread'>&middot;&middot;&middot;</div>\n";
+	echo "		</div>\n";
 	echo "	</div>\n";
 	echo "</div>\n";
 
 //js to load messages for clicked number
-	echo "<script>\n";
-
 	$refresh_contacts = is_numeric($_SESSION['message']['refresh_contacts']['numeric']) && $_SESSION['message']['refresh_contacts']['numeric'] > 0 ? $_SESSION['message']['refresh_contacts']['numeric'] : 10; //default (seconds)
 	$refresh_thread = is_numeric($_SESSION['message']['refresh_thread']['numeric']) && $_SESSION['message']['refresh_thread']['numeric'] > 0 ? $_SESSION['message']['refresh_thread']['numeric'] : 5; //default (seconds)
-	echo "	var contacts_refresh = ".($refresh_contacts * 1000).";\n";
-	echo "	var thread_refresh = ".($refresh_thread * 1000).";\n";
-	echo "	var timer_contacts;\n";
-	echo "	var timer_thread;\n";
+?>
+<script>
+	var contacts_refresh = (<?php echo $refresh_contacts; ?> * 1000);
+	var thread_refresh = (<?php echo $refresh_thread; ?> * 1000);
+	var timer_contacts;
+	var timer_thread;
 
-	echo "	function refresh_contacts() {\n";
-	echo "		clearTimeout(timer_contacts);\n";
-	echo "		$('#contacts').load('messages_contacts.php?sel=' + $('#contact_current_number').val(), function(){\n";
-	echo "			timer_contacts = setTimeout(refresh_contacts, contacts_refresh);\n";
-	echo "		});\n";
-	echo "	}\n";
-
-	echo "	function load_thread(number, contact_uuid) {\n";
-	echo "		clearTimeout(timer_thread);\n";
-	echo "		$('#thread').load('messages_thread.php?number=' + encodeURIComponent(number) + '&contact_uuid=' + encodeURIComponent(contact_uuid), function(){\n";
-	echo "			$('div#thread_messages').animate({ 'height': $(window).height() - 200 }, 200, function() {\n";
-	echo "				$('#thread_messages').scrollTop(Number.MAX_SAFE_INTEGER);\n"; //chrome
-	echo "				$('span#thread_bottom')[0].scrollIntoView(true);\n"; //others
-						//note: the order of the above two lines matters!
-	if (!http_user_agent('mobile')) {
-		echo "			if ($('#message_new_layer').is(':hidden')) {\n";
-		echo "				$('#message_text').trigger('focus');\n";
-		echo "			}\n";
+	function refresh_contacts() {
+		clearTimeout(timer_contacts);
+		$('#contacts').load('messages_contacts.php?sel=' + $('#contact_current_number').val(), function(){
+			timer_contacts = setTimeout(refresh_contacts, contacts_refresh);
+		});
 	}
-	echo "				refresh_contacts();\n";
-	echo "				timer_thread = setTimeout(refresh_thread_start, thread_refresh, number, contact_uuid);\n";
-	echo "			});\n";
-	echo "		});\n";
-	echo "	}\n";
 
-	echo "	function unload_thread() {\n";
-	echo "		clearTimeout(timer_thread);\n";
-	echo "		$('#thread').html('<center>&middot;&middot;&middot;</center>');\n";
-	echo "		$('#contact_current_number').val('');\n";
-	echo "		$('#contact_current_name').html('');\n";
-	echo "		refresh_contacts();\n";
-	echo "	}\n";
-
-	echo "	function refresh_thread(number, contact_uuid, onsent) {\n";
-	echo "		$('#thread_messages').load('messages_thread.php?refresh=true&number=' + encodeURIComponent(number) + '&contact_uuid=' + encodeURIComponent(contact_uuid), function(){\n";
-	echo "			$('div#thread_messages').animate({ 'height': $(window).height() - 200 }, 200, function() {\n";
-	echo "				$('#thread_messages').scrollTop(Number.MAX_SAFE_INTEGER);\n"; //chrome
-	echo "				$('span#thread_bottom')[0].scrollIntoView(true);\n"; //others
+	function load_thread(number, contact_uuid) {
+		clearTimeout(timer_thread);
+		$('#thread').load('messages_thread.php?number=' + encodeURIComponent(number) + '&contact_uuid=' + encodeURIComponent(contact_uuid), function(){
+			$('div#thread_messages').animate({}, 200, function() {
+				$('#thread_messages').scrollTop(Number.MAX_SAFE_INTEGER); //chrome
+				$('span#thread_bottom')[0].scrollIntoView(true); //others
 						//note: the order of the above two lines matters!
-	if (!http_user_agent('mobile')) {
-		echo "				if ($('#message_new_layer').is(':hidden')) {\n";
-		echo "			$('#message_text').trigger('focus');\n";
-		echo "			}\n";
+		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+			if ($('#message_new_layer').is(':hidden')) {
+				$('#message_text').trigger('focus');
+		}
 	}
-	echo "				if (onsent != 'true') {\n";
-	echo "					timer_thread = setTimeout(refresh_thread, thread_refresh, number, contact_uuid);\n";
-	echo "				}\n";
-	echo "			});\n";
-	echo "		});\n";
-	echo "	}\n";
+				refresh_contacts();
+				timer_thread = setTimeout(refresh_thread_start, thread_refresh, number, contact_uuid);
+			});
+		});
+	}
 
-//refresh controls
-	echo "	function refresh_contacts_stop() {\n";
-	echo "		clearTimeout(timer_contacts);\n";
-	echo "		document.getElementById('contacts_refresh_state').innerHTML = \"<img src='resources/images/refresh_paused.png' style='width: 16px; height: 16px; border: none; margin-top: 1px; cursor: pointer;' onclick='refresh_contacts_start();' alt='".$text['label-refresh_enable']."' title='".$text['label-refresh_enable']."'>\";\n";
-	echo "	}\n";
+	function unload_thread() {
+		clearTimeout(timer_thread);
+		$('#thread').html('<center>&middot;&middot;&middot;</center>');
+		$('#contact_current_number').val('');
+		$('#contact_current_name').html('');
+		refresh_contacts();
+	}
 
+	function refresh_thread(number, contact_uuid, onsent) {
+		$('#thread_messages').load('messages_thread.php?refresh=true&number=' + encodeURIComponent(number) + '&contact_uuid=' + encodeURIComponent(contact_uuid), function(){
+			$('div#thread_messages').animate({ }, 200, function() {
+				$('#thread_messages').scrollTop(Number.MAX_SAFE_INTEGER); //chrome
+				$('span#thread_bottom')[0].scrollIntoView(true); //others
+						//note: the order of the above two lines matters!
+		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+			if ($('#message_new_layer').is(':hidden')) {
+				$('#message_text').trigger('focus');
+		}
+	}
+				if (onsent != 'true') {
+					timer_thread = setTimeout(refresh_thread, thread_refresh, number, contact_uuid);
+				}
+			});
+		});
+	}
+
+	function refresh_contacts_stop() {
+		clearTimeout(timer_contacts);
+		document.getElementById('contacts_refresh_state').innerHTML = '<img src="resources/images/refresh_paused.png" style="width: 16px; height: 16px; border: none; margin-top: 1px; cursor: pointer;" onclick="refresh_contacts_start();" alt="<?php echo $text['label-refresh_enable']; ?> title="<?php echo $text['label-refresh_enable']; ?>">';
+	}
+
+<?php
 	echo "	function refresh_contacts_start() {\n";
 	echo "		if (document.getElementById('contacts_refresh_state')) {\n";
 	echo "			document.getElementById('contacts_refresh_state').innerHTML = \"<img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; margin-top: 3px; cursor: pointer;' onclick='refresh_contacts_stop();' alt='".$text['label-refresh_pause']."' title='".$text['label-refresh_pause']."'>\";\n";
@@ -306,8 +300,9 @@ echo "<meta name='mobile-web-app-capable' content='yes'>\n";
 	echo "</script>\n";
 
 	unset($messages, $message, $numbers, $number);
+?>
 
+<?php
 //include the footer
 	require_once "resources/footer.php";
-
 ?>
