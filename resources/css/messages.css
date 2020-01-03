@@ -74,6 +74,8 @@ nav.navbar {
 	-webkit-box-shadow: 0px 1px 20px #888;
 	-moz-box-shadow: 0px 1px 20px #888;
 	box-shadow: 0 2px 6px 0 rgba(60,64,67,.15);
+	background: rgba(255, 255, 255, 0.95);
+	z-index: 1;
 }
 
 .title, b {
@@ -155,27 +157,38 @@ nav.navbar {
 }
 
 /* Message Window Styles */
-#thread {
-	padding-left: 15px;
-	float: left;
-	width: 100%;
-}
-
 textarea.formfld {
 	color: #202124 !important;
 	font-size: 1.2em !important;
 	border-radius: 30px;
 }
 
-#thread_messages,
-#message_compose {
-	max-width: 975px;
-	margin:0 auto;
+.thread_container {
+	--conv-container-host-bg-color: #fff;
+	--compose-readonly-bg-color: #fff;
+	--file-overlay-bg-color: rgba(255,255,255,.87);
+	--conversation-readonly-color: #5f6368;
+	background-color: var(--conv-container-host-bg-color);
+	contain: strict;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-width: 0;
+	position: relative;
+	width: 100%;
+}
+
+#thread {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
 }
 
 #thread_messages {
-	overflow-y: scroll;
-	scrollbar-color: var(--thumbBG) var(--scrollbarBG)
+	flex-grow: 1;
+	min-height: 100%;
+	overflow: hidden;
+	position: relative;
 }
 
 #thread_messages::-webkit-scrollbar {
@@ -191,7 +204,47 @@ textarea.formfld {
   border: 3px solid var(--scrollbarBG);
 }
 
+.flex_container {
+	--messages-load-more-bg-color: #f1f3f4;
+	--messages-load-more-color: #202124;
+	--typing-indicator-row-color: #5f6368;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	min-height: 0;
+	position: relative;
+	width: 100%;
+}
+
+#flex_scroll {
+	padding: 0 20px 0 32px;
+    --bottom-anchored-content-padding-top: calc(var(--header-height) + 24px);
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	min-height:300px;
+	outline: none;
+	overflow-anchor: none;
+	overflow-x: hidden;
+	--webkit-overflow-scrolling: touch;
+}
+
+.thread_bottom_anchor {
+	bottom: 0;
+	padding-top: 0;
+	position: absolute;
+	transform: translateY(0);
+	padding-bottom:140px;
+	width: 100%;
+}
+
+.thread_bottom_content {
+	max-width: 975px;
+	margin: 0 auto;
+}
+
 #message_compose {
+	position: absolute;
 	bottom: 0;
 	left: 20px;
 	width: 97%;
