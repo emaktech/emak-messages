@@ -130,8 +130,11 @@
 	}
 
 	if (!$refresh) {
-		echo "<div style='position: relative;'>";
-		echo "<div id='thread_messages' style='min-height: 300px; overflow: auto; padding-right: 15px;'>\n";
+		echo "<div class='flex_container'>\n";
+		echo "<div id='flex_scroll'>\n";
+		echo "<div id='thread_messages'>\n";
+		echo "	<div class='thread_bottom_anchor'>\n";
+		echo "		<div class='thread_bottom_content'>\n";
 	}
 
 	//output messages
@@ -163,12 +166,12 @@
 						echo "<div class='message-time'>".$text['label-message-time-yesterday']." " .date('g:i a', $message_current_date)."</div>\n";
 					}
 					
-					//last 2 to 3 days
-					elseif (date('Ymd', strtotime('-3 days')) <= date('Ymd', $message_current_date)) {
+					//last 2 to 6 days
+					elseif (date('Ymd', strtotime('-6 days')) <= date('Ymd', $message_current_date)) {
 						echo "<div class='message-time'>".date('l', $message_current_date)." " .$text['label-message-time-at']." " .date('g:i a', $message_current_date)."</div>\n";
 					}
 					
-					//older than 3 days
+					//7 days or older
 					else {
 						echo "<div class='message-time'>".(date('d M. Y', $message_current_date))." ".$text['label-message-time-at']." ".date('g:i a', $message_current_date)."</div>\n";
 					}
@@ -230,14 +233,14 @@
 		echo "</script>\n";
 
 	if (!$refresh) {
-		echo "</div></div>\n";
+		echo "</div></div></div></div></div>\n";
 
 		if (permission_exists('message_add')) {
 			//output input form
 			echo "<form id='message_compose' method='post' enctype='multipart/form-data' action='message_send.php'>\n";
 			echo "<input type='hidden' name='message_from' value='".$message_from."'>\n";
 			echo "<input type='hidden' name='message_to' value='".$number."'>\n";
-			echo "	<textarea class='formfld' id='message_text' name='message_text' placeholder=\"".$text['description-enter_response']."\"></textarea>";
+			echo "	<textarea class='formfld' id='message_text' data-emojiable='true' name='message_text' placeholder=\"".$text['description-enter_response']."\"></textarea>";
 			echo "	<input type='submit' class='btn btn_send' value='".$text['button-send']."' title=\"".$text['label-ctrl_enter']."\"></div>\n";
 			echo "	<div class='attachment'>\n";
 			echo " 		<img src='resources/images/attachment.png' style='min-width: 20px; height: 20px; border: none; padding-right: 5px;'>\n";
@@ -284,6 +287,12 @@
 </script>
 
 <script>
+//Set messages height to content height
+var threadHeight = $('.thread_bottom_content').height();
+document.getElementById('flex_scroll').style.minHeight = threadHeight + 180 + "px";
+</script>
+
+<script>
 //Restyle messages divs which contain only an emoji
 var messageTextDiv = document.getElementsByClassName('message-text');
 for (var i=0; i < messageTextDiv.length; i++) {
@@ -294,29 +303,22 @@ for (var i=0; i < messageTextDiv.length; i++) {
 </script>
 
 
+<!-- Begin emoji-picker JavaScript 
+<script src="resources/js/config.js"></script>
+<script src="resources/js/util.js"></script>
+<script src="resources/js/jquery.emojiarea.js"></script>
+<script src="resources/js/emoji-picker.js"></script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<script>
+$(function() {
+// Initializes and creates emoji set from sprite sheet
+	window.emojiPicker = new EmojiPicker({
+		emojiable_selector: '[data-emojiable=true]',
+		assetsPath: 'resources/images/emoji/',
+		popupButtonClasses: 'fa fa-smile-o'
+	});
+	window.emojiPicker.discover();
+});
+</script>
+-->
+<!-- End emoji-picker JavaScript -->
