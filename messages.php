@@ -241,29 +241,29 @@ echo "<meta name='mobile-web-app-capable' content='yes'>\n";
 
 	function refresh_contacts_stop() {
 		clearTimeout(timer_contacts);
-		document.getElementById('contacts_refresh_state').innerHTML = '<img src="resources/images/refresh_paused.png" style="width: 16px; height: 16px; border: none; margin-top: 1px; cursor: pointer;" onclick="refresh_contacts_start();" alt="<?php echo $text['label-refresh_enable']; ?> title="<?php echo $text['label-refresh_enable']; ?>">';
+		document.getElementById('contacts_refresh_state').innerHTML = '<img src="resources/images/refresh_paused.png" class="refresh" onclick="refresh_contacts_start();" alt="<?php echo $text['label-refresh_enable']; ?>" title="<?php echo $text['label-refresh_enable']; ?>">';
 	}
 
+	function refresh_contacts_start() {
+		if (document.getElementById('contacts_refresh_state')) {
+			document.getElementById('contacts_refresh_state').innerHTML = '<img src="resources/images/refresh_active.gif" class="refresh" onclick="refresh_contacts_stop();" alt="<?php echo $text['label-refresh_pause']; ?>" title="<?php echo $text['label-refresh_pause']; ?>';
+			refresh_contacts();
+		}
+	}
+
+	function refresh_thread_stop(number, contact_uuid) {
+		clearTimeout(timer_thread);
+		document.getElementById('thread_refresh_state').innerHTML = '<img src="resources/images/refresh_paused.png" class="refresh" onclick="refresh_thread_start(' + number + ', ' + contact_uuid + ');" alt="<?php echo $text['label-refresh_enable']; ?>" title="<?php echo $text['label-refresh_enable']; ?>">';
+	}
+
+	function refresh_thread_start(number, contact_uuid) {
+		if (document.getElementById('thread_refresh_state')) {
+			document.getElementById('thread_refresh_state').innerHTML = '<img src="resources/images/refresh_active.gif" class="refresh" onclick="refresh_thread_stop(' + number + ', ' + contact_uuid + ');" alt="<?php echo $text['label-refresh_pause']; ?>" title="<?php echo $text['label-refresh_pause']; ?>">';
+			refresh_thread(number, contact_uuid);
+		}
+	}
+	
 <?php
-	echo "	function refresh_contacts_start() {\n";
-	echo "		if (document.getElementById('contacts_refresh_state')) {\n";
-	echo "			document.getElementById('contacts_refresh_state').innerHTML = \"<img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; margin-top: 3px; cursor: pointer;' onclick='refresh_contacts_stop();' alt='".$text['label-refresh_pause']."' title='".$text['label-refresh_pause']."'>\";\n";
-	echo "			refresh_contacts();\n";
-	echo "		}\n";
-	echo "	}\n";
-
-	echo "	function refresh_thread_stop(number, contact_uuid) {\n";
-	echo "		clearTimeout(timer_thread);\n";
-	?>			document.getElementById('thread_refresh_state').innerHTML = "<img src='resources/images/refresh_paused.png' style='width: 16px; height: 16px; border: none; margin-top: 3px; cursor: pointer;' onclick=\"refresh_thread_start('" + number + "', '" + contact_uuid + "');\" alt=\"<?php echo $text['label-refresh_enable']; ?>\" title=\"<?php echo $text['label-refresh_enable']; ?>\">";<?php
-	echo "	}\n";
-
-	echo "	function refresh_thread_start(number, contact_uuid) {\n";
-	echo "		if (document.getElementById('thread_refresh_state')) {\n";
-	?>				document.getElementById('thread_refresh_state').innerHTML = "<img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; margin-top: 3px; cursor: pointer;' onclick=\"refresh_thread_stop('" + number + "', '" + contact_uuid + "');\" alt=\"<?php echo $text['label-refresh_pause']; ?>\" title=\"<?php echo $text['label-refresh_pause']; ?>\">";<?php
-	echo "			refresh_thread(number, contact_uuid);\n";
-	echo "		}\n";
-	echo "	}\n";
-
 //define form submit function
 	if (permission_exists('message_add')) {
 		echo "	$('#message_new').submit(function(event) {\n";
@@ -287,22 +287,20 @@ echo "<meta name='mobile-web-app-capable' content='yes'>\n";
 		echo "		});\n";
 		echo "	});\n";
 	}
-
-//open message media in layer
-	echo "	function display_media(id, src) {\n";
-	echo "		$('#message_media_layer').load('message_media.php?id=' + id + '&src=' + src + '&action=display', function(){\n";
-	echo "			$('#message_media_layer').fadeIn(200);\n";
-	echo "		});\n";
-	echo "	}\n";
-
-	echo "	refresh_contacts();\n";
-
-	echo "</script>\n";
-
-	unset($messages, $message, $numbers, $number);
 ?>
+//open message media in layer
+	function display_media(id, src) {
+		$('#message_media_layer').load('message_media.php?id=' + id + '&src=' + src + '&action=display', function(){
+			$('#message_media_layer').fadeIn(200);
+		});
+	}
 
+	refresh_contacts();
+
+</script>
 <?php
+	unset($messages, $message, $numbers, $number);
+
 //include the footer
 	require_once "resources/footer.php";
 ?>
