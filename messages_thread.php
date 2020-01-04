@@ -130,7 +130,7 @@
 	}
 
 	if (!$refresh) {
-		echo "<div class='flex_container'>\n";
+		echo "<div class='flex_container' id='flex_container'>\n";
 		echo "<div id='flex_scroll'>\n";
 		echo "<div id='thread_messages'>\n";
 		echo "	<div class='thread_bottom_anchor'>\n";
@@ -217,7 +217,6 @@
 									echo "</a>\n";
 								}
 							}
-							echo "<br />\n";
 						}
 				echo "</div>\n";
 			}
@@ -233,23 +232,25 @@
 		echo "</script>\n";
 
 	if (!$refresh) {
-		echo "</div></div></div></div></div>\n";
+		echo "</div></div></div></div></div></div>\n";
 
 		if (permission_exists('message_add')) {
 			//output input form
-			echo "<form id='message_compose' method='post' enctype='multipart/form-data' action='message_send.php'>\n";
-			echo "<input type='hidden' name='message_from' value='".$message_from."'>\n";
-			echo "<input type='hidden' name='message_to' value='".$number."'>\n";
-			echo "	<textarea class='formfld' id='message_text' data-emojiable='true' name='message_text' placeholder=\"".$text['description-enter_response']."\"></textarea>";
-			echo "	<input type='submit' class='btn btn_send' value='".$text['button-send']."' title=\"".$text['label-ctrl_enter']."\"></div>\n";
-			echo "	<div class='attachment'>\n";
-			echo " 		<img src='resources/images/attachment.png' style='min-width: 20px; height: 20px; border: none; padding-right: 5px;'>\n";
-			echo "		<input type='file' class='formfld' multiple='multiple' name='message_media[]' id='message_new_media'>\n";
-			echo "	</div>\n";
-			echo "	<span id='thread_refresh_state'><img src='resources/images/refresh_active.gif' style='width: 16px; height: 16px; border: none; cursor: pointer;' onclick=\"refresh_thread_stop('".$number."','".$contact_uuid."');\" alt=\"".$text['label-refresh_pause']."\" title=\"".$text['label-refresh_pause']."\"></span>\n";
-			echo "</form>\n";
-
-
+			echo "	<form id='message_compose' method='post' enctype='multipart/form-data' action='message_send.php'>\n";
+			echo "	<input type='hidden' name='message_from' value='".$message_from."'>\n";
+			echo "	<input type='hidden' name='message_to' value='".$number."'>\n";
+			echo "<div class='compose_container'>\n";
+			echo "<div class='compose_container_child'>\n";
+			echo "		<div class='compose_text_container'><textarea class='formfld' id='message_text' data-emojiable='true' name='message_text' placeholder=\"".$text['description-enter_response']."\"></textarea></div>";
+			echo "		<div class='submit_container'><input type='submit' class='btn btn_send' value='".$text['button-send']."' title=\"".$text['label-ctrl_enter']."\"></div>\n";
+			echo "</div>\n";
+			echo "</div>\n";
+			echo "		<div class='attachment'>\n";
+			echo "			<span id='thread_refresh_state'><img src='resources/images/refresh_active.gif' class='refresh' onclick=\"refresh_thread_stop('".$number."','".$contact_uuid."');\" alt=\"".$text['label-refresh_pause']."\" title=\"".$text['label-refresh_pause']."\"></span>\n";			
+			echo " 			<img src='resources/images/attachment.png' style='min-width: 20px; height: 20px; border: none; padding-right: 5px;'>\n";
+			echo "			<input type='file' class='formfld' multiple='multiple' name='message_media[]' id='message_new_media'>\n";
+			echo "		</div>\n";
+			echo "	</form>\n";
 		}
 	}
 
@@ -284,22 +285,42 @@
 			$('#message_compose').submit();
 		}
 	})
-</script>
 
-<script>
 //Set messages height to content height
-var threadHeight = $('.thread_bottom_content').height();
-document.getElementById('flex_scroll').style.minHeight = threadHeight + 180 + "px";
-</script>
+	var threadHeight = $('.thread_bottom_content').height() + 210;
+	document.getElementById('flex_scroll').style.minHeight = threadHeight + "px";
 
-<script>
-//Restyle messages divs which contain only an emoji
-var messageTextDiv = document.getElementsByClassName('message-text');
-for (var i=0; i < messageTextDiv.length; i++) {
-  if (messageTextDiv[i].innerHTML.match(/^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/)) {
-	messageTextDiv[i].classList.add('emoji');
-  }
+//Scroll thread to bottom on resize if at bottom
+function scrollDown() {
+	var threadDiv = document.getElementById('flex_container');
+
+	//Debugging stuff to delete later
+	/*
+	var total =  threadHeight - (threadDiv.scrollTop + threadDiv.offsetHeight);
+	var istrue = 'unset';
+	if (threadDiv.scrollTop + threadDiv.offsetHeight >= threadHeight - 80) {
+		istrue = 'yes';
+	}
+	else {
+		istrue = 'false';
+	}
+	document.getElementById("contacts").innerHTML = 'threadHeight=' + threadHeight + '<br />scrollTop=' + threadDiv.scrollTop + '<br />offsetHeight=' + threadDiv.offsetHeight + '<br /> total=' + total + '<br />true=' + istrue;
+	*/
+	
+	if (threadDiv.scrollTop + threadDiv.offsetHeight >= threadHeight - 800) {
+		threadDiv.scrollTop = threadDiv.scrollHeight;
+		setTimeout(function(){ threadDiv.scrollTop = threadHeight; }, 0);
+	}
 }
+window.addEventListener("resize", scrollDown);
+
+//Restyle messages which contain only an emoji
+	var messageTextDiv = document.getElementsByClassName('message-text');
+	for (var i=0; i < messageTextDiv.length; i++) {
+	  if (messageTextDiv[i].innerHTML.match(/^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/)) {
+		messageTextDiv[i].classList.add('emoji');
+	  }
+	}
 </script>
 
 
