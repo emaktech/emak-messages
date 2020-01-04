@@ -4,7 +4,7 @@
 	scrollbar-width: thin;
 	--scrollbarBG: #f2f2f2;
 	--thumbBG: #ccc;
-	overflow-x: hidden;
+	overflow: hidden;
 }
 
 body {
@@ -33,11 +33,14 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-/*  padding-top: 50px; */
 }
 
 nav.navbar {
 	display: none;
+}
+
+#contacts {
+	overflow: auto;
 }
 
 #contacts-container {
@@ -102,18 +105,11 @@ nav.navbar {
 		display: none;
 		flex-grow:1
 	}
-	#message_text {
-		width: 82% !important;
-	}
 }
 @media all and (min-width: 560px) {
 	#contacts-container {
 		min-width:240px;
 		width:240px
-	}
-	
-	#message_text {
-		width: 82% !important;
 	}
 }
 @media all and (min-width: 680px) {
@@ -121,16 +117,12 @@ nav.navbar {
 		min-width:305px;
 		width:305px
 	}
-
-	#message_text {
-		width: 82% !important;
-	}
 }
 @media all and (min-width: 960px) {
 	#contacts-container {
 		min-width:340px;
 		width:340px
- }
+	}
 }
 @media all and (min-width: 1440px) {
 	#contacts-container {
@@ -157,18 +149,7 @@ nav.navbar {
 }
 
 /* Message Window Styles */
-textarea.formfld {
-	color: #202124 !important;
-	font-size: 1.2em !important;
-	border-radius: 30px;
-}
-
 .thread_container {
-	--conv-container-host-bg-color: #fff;
-	--compose-readonly-bg-color: #fff;
-	--file-overlay-bg-color: rgba(255,255,255,.87);
-	--conversation-readonly-color: #5f6368;
-	background-color: var(--conv-container-host-bg-color);
 	contain: strict;
 	display: flex;
 	flex-direction: column;
@@ -191,23 +172,27 @@ textarea.formfld {
 	position: relative;
 }
 
-#thread_messages::-webkit-scrollbar {
-  width: 11px;
+#flex_container {
+	overflow-y: scroll;
 }
 
-#thread_messages::-webkit-scrollbar-track {
-  background: var(--scrollbarBG);
+#flex_container::-webkit-scrollbar,
+#contacts::-webkit-scrollbar {
+	width: 11px;
 }
-#thread_messages::-webkit-scrollbar-thumb {
-  background-color: var(--thumbBG) ;
-  border-radius: 6px;
-  border: 3px solid var(--scrollbarBG);
+
+#flex_container::-webkit-scrollbar-track,
+#contacts::-webkit-scrollbar-track {
+	background: var(--scrollbarBG);
+}
+#flex_container::-webkit-scrollbar-thumb,
+#contacts::-webkit-scrollbar-thumb {
+	background-color: var(--thumbBG) ;
+	border-radius: 6px;
+	border: 3px solid var(--scrollbarBG);
 }
 
 .flex_container {
-	--messages-load-more-bg-color: #f1f3f4;
-	--messages-load-more-color: #202124;
-	--typing-indicator-row-color: #5f6368;
 	display: flex;
 	flex-direction: column;
 	flex-grow: 1;
@@ -218,7 +203,6 @@ textarea.formfld {
 
 #flex_scroll {
 	padding: 0 20px 0 32px;
-    --bottom-anchored-content-padding-top: calc(var(--header-height) + 24px);
 	display: flex;
 	flex-direction: column;
 	flex-grow: 1;
@@ -226,15 +210,14 @@ textarea.formfld {
 	outline: none;
 	overflow-anchor: none;
 	overflow-x: hidden;
-	--webkit-overflow-scrolling: touch;
+	-webkit-overflow-scrolling: touch;
 }
 
 .thread_bottom_anchor {
 	bottom: 0;
 	padding-top: 0;
 	position: absolute;
-	transform: translateY(0);
-	padding-bottom:140px;
+	padding-bottom:115px;
 	width: 100%;
 }
 
@@ -243,14 +226,35 @@ textarea.formfld {
 	margin: 0 auto;
 }
 
+.compose_container {
+	max-width: 985px;
+	margin: 0 auto;
+	display: flex;
+}
+
+.compose_container_child {
+	display: flex;
+	margin: auto;
+	width: 100%;
+	justify-content: right;
+}
+
+.compose_text_container {
+	width: 100%;
+	padding-right: 10px;
+}
+
+.submit_container {
+	flex-shrink: 0;
+}
+
 #message_compose {
 	position: absolute;
 	bottom: 0;
 	left: 20px;
-	width: 97%;
-	padding-bottom: 20px;
-	padding-right: 20px;
-	background: #fff;
+	width: calc(100% - 32px);
+	padding: 12px 20px 20px 10px;
+	background-image: linear-gradient(transparent, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95));
 }
 
 #message_new_layer {
@@ -275,10 +279,6 @@ textarea.formfld {
 	vertical-align: middle;
 }
 
-#message_text {
-	margin-top: 0 !important;
-}
-
 .btn_new {
 	clear: both;
 }
@@ -291,10 +291,12 @@ textarea.formfld {
 
 .btn_send {
 	float: right;
-	margin-top:4px;
-	padding:15px !important;
-	height: auto !important;
+	padding: 0 !important;
+	height: 60px !important;
+	width: 75px;
 	border-radius: 50px !important;
+	text-align: center;
+	margin-top: 2px;
 }
 
 .contact {
@@ -305,6 +307,11 @@ textarea.formfld {
 
 .refresh {
 	text-align: center;
+	width: 16px;
+	height: 16px;
+	border: none;
+	margin-top: 1px;
+	cursor: pointer;
 }
 
 .contact_list_image {
@@ -321,7 +328,7 @@ textarea.formfld {
 	
 .message-bubble {
 	display: table;
-	padding: 10px 20px;
+	padding: 10px 16px;
 	margin-bottom: 10px;
 }
 
@@ -373,24 +380,41 @@ div.message-bubble-image-me {
 }
 
 .message-text {
-	font-size: 1.2em;
+	font-size: 14px;
 	color: #333;
+	padding: 0 2px;
 }
 
 #message_text {
-	width: 90%;
-	max-width: 90%;
+	color: #202124;
+	font-size: 14px;
+	width: 100%;
+	max-width: 100%;
 	min-height: 55px;
 	border: 1px solid #cbcbcb;
 	resize: vertical;
-	padding: 5px 8px;
-	margin-top: 10px;
-	margin-bottom: 5px;
+	margin: 5px;
+	padding: 6px 24px;
+	background: #fff;
+	resize: none;
+	border-radius: 30px;
+	outline: none;
+}
+
+#message_text:focus {
+	box-shadow: 0 0 8px #ccc !important;
+}
+
+#message_text::placeholder {
+	line-height: 42px;
+}
+
+#message_text:focus::placeholder {
+	color: transparent;
 }
 
 .emoji {
-	font-size: 3em;
-	margin-top: -3px;
+	font-size: 40px;
 }
 
 .message-bubble-when {
